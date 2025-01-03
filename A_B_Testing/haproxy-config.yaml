@@ -1,0 +1,34 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: haproxy-config
+data:
+  haproxy.cfg: |
+    defaults
+      mode http
+      timeout client 10s
+      timeout connect 5s
+      timeout server 10s
+      timeout http-request 10s
+
+    frontend listen
+      bind *:8080
+
+      use_backend v1 if { req.cook(SITEID) -m beg app-v1 }
+      use_backend v2 if { req.cook(SITEID) -m beg app-v2 }
+      
+      default_backend ab-backend
+
+    backend v1
+      server backend-01 app-v1:8080
+
+    backend v2
+      server backend-02 app-v2:8080
+
+    backend ab-backend
+      balance roundrobin
+
+      cookie SITEID insert indirect nocache maxlife 24h
+
+      server backend-01 app-v1:8080 weight 80 cookie app-v1
+      server backend-02 app-v2:8080 weight 20 cookie app-v2
