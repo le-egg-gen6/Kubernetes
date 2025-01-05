@@ -28,4 +28,16 @@ vi k8s-cluster.yml #change kube_network_plugin: calico -> kube_network_plugin: f
 #Install Docker
 sudo apt-get update
 curl -fsSL https://get.docker.com | sh
-sudo usermod -aG docker $USER
+sudo usermod -aG docker lenn
+
+#Create docker-container from kubespray image, install k8s_cluster inside this container
+docker run --rm -it --mount type=bind,source=/home/lenn/k8s_installation/kubespray/inventory/vm-cluster,dst=/inventory \
+  --mount type=bind,source=/home/lenn/.ssh/id_rsa,dst=/root/.ssh/id_rsa \
+  --mount type=bind,source=/home/lenn/.ssh/id_rsa,dst=/home/lenn/.ssh/id_rsa \
+  quay.io/kubespray/kubespray:v2.26.0 bash 
+
+#Run ansible playbook for initialize k8s cluster (inside kubespray image))
+ansible-playbook -i /inventory/hosts.ini cluster.yml --user=lenn --ask-pass --become --ask-become-pass
+
+#root_username: lenn
+#root_password: lenn
