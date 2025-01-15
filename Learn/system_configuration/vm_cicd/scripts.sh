@@ -13,7 +13,7 @@ cd ~
 mkdir k8s_installation
 cd k8s_installation
 
-git clone https://github.com/kubernetes-sigs/kubespray.git --branch release-2.26
+git clone https://github.com/kubernetes-sigs/kubespray.git --branch release-2.16
 
 cd ~/k8s_installation/kubespray
 cp -rf inventory/sample inventory/vm-cluster
@@ -34,7 +34,7 @@ sudo usermod -aG docker lenn
 docker run --rm -it --mount type=bind,source=/home/lenn/k8s_installation/kubespray/inventory/vm-cluster,dst=/inventory \
   --mount type=bind,source=/home/lenn/.ssh/id_rsa,dst=/root/.ssh/id_rsa \
   --mount type=bind,source=/home/lenn/.ssh/id_rsa,dst=/home/lenn/.ssh/id_rsa \
-  quay.io/kubespray/kubespray:v2.26.0 bash 
+  quay.io/kubespray/kubespray:v2.16.0 bash 
 
 #Run ansible playbook for initialize k8s cluster (inside kubespray image))
 ansible-playbook -i /inventory/hosts.ini cluster.yml --user=lenn --ask-pass --become --ask-become-pass
